@@ -1,0 +1,9 @@
+need two terminals to run the backend server and the frontend server
+backend server: cd server && node index.js
+frontend server: cd client && npm run dev
+
+Every time the frontend needs data (products, login, cart), it calls
+http://localhost:5000/api/.... The server reads/writes to server/odeshie.db 
+
+To edit products, edit server/seed.js and cd server && node seed.js to reset the database with new products.
+Edit navbar and footers in client/src/components/Navbar.jsx and Footer.jsx

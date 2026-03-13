@@ -1,0 +1,147 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-dark: #3B1F0D;
+    --color-brown: #7B4A2D;
+    --color-gold: #C4952A;
+    --color-beige: #E8D5B7;
+    --color-cream: #FAF7F2;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background-color: #FFFFFF;
+    color: #1a1a1a;
+    line-height: 1.6;
+  }
+
+  .dark body {
+    background-color: #1a0f08;
+    color: #FAF7F2;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  .btn-gold {
+    @apply bg-odeshie-gold text-white font-semibold px-6 py-3 rounded-full hover:bg-opacity-90 transition-all duration-200 shadow-md hover:shadow-lg;
+  }
+
+  .btn-dark {
+    @apply bg-odeshie-dark text-white font-semibold px-6 py-3 rounded-full hover:bg-opacity-90 transition-all duration-200;
+  }
+
+  .btn-outline {
+    @apply border-2 border-odeshie-dark text-odeshie-dark font-semibold px-6 py-3 rounded-full hover:bg-odeshie-dark hover:text-white transition-all duration-200;
+  }
+
+  .section-title {
+    @apply font-display text-4xl md:text-5xl font-semibold text-gray-900 dark:text-odeshie-cream;
+  }
+
+  .nav-link {
+    @apply text-white/80 hover:text-white text-sm font-medium transition-colors duration-200 hover:underline underline-offset-4;
+  }
+
+  .product-card-hover {
+    @apply transform hover:-translate-y-1 hover:shadow-xl transition-all duration-300;
+  }
+
+  .star-filled {
+    color: #C4952A;
+  }
+
+  .star-empty {
+    color: #D1D5DB;
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #FAF7F2;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #7B4A2D;
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #3B1F0D;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .bg-hero-gradient {
+    background: linear-gradient(135deg, #3B1F0D 0%, #7B4A2D 50%, #C4952A 100%);
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Custom animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #f0e6d3 25%, #e8d5b7 50%, #f0e6d3 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Category card arch shape */
+.arch-shape {
+  border-radius: 50% 50% 0 0 / 30% 30% 0 0;
+}
