@@ -1,19 +1,12 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import api from '../api.js';
+import { getSaleProducts } from '../data/products.js';
 import ProductCard from './ProductCard.jsx';
 
 export default function SalesSection() {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [products] = useState(getSaleProducts());
+  const loading = false;
   const scrollRef = useRef(null);
-
-  useEffect(() => {
-    api.get('/api/products?is_on_sale=true')
-      .then(res => setProducts(res.data))
-      .catch(err => console.error('Failed to load sales:', err))
-      .finally(() => setLoading(false));
-  }, []);
 
   const scroll = (direction) => {
     if (scrollRef.current) {

@@ -1,19 +1,12 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import api from '../api.js';
+import { getNewArrivals } from '../data/products.js';
 import ProductCard from './ProductCard.jsx';
 
 export default function NewArrivals() {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [products] = useState(getNewArrivals());
+  const loading = false;
   const scrollRef = useRef(null);
-
-  useEffect(() => {
-    api.get('/api/products?is_new_arrival=true')
-      .then(res => setProducts(res.data))
-      .catch(err => console.error('Failed to load new arrivals:', err))
-      .finally(() => setLoading(false));
-  }, []);
 
   const scroll = (direction) => {
     if (scrollRef.current) {

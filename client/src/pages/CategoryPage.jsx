@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useSearchParams, Link } from 'react-router-dom';
-import api from '../api.js';
+import { products as allProducts } from '../data/products.js';
 import ProductCard from '../components/ProductCard.jsx';
 
 const ITEMS_PER_PAGE = 12;
@@ -126,28 +126,20 @@ export default function CategoryPage({ filter }) {
     ? `Search: "${searchQuery}"`
     : categoryLabels[category] || category;
 
-  const fetchProducts = useCallback(() => {
-    setLoading(true);
-
-    let url = '/api/products?';
-    const params = new URLSearchParams();
-
-    if (isNewArrival) params.append('is_new_arrival', 'true');
-    else if (isSale) params.append('is_on_sale', 'true');
-    else if (category && category !== 'all') params.append('category', category);
-
-    if (searchQuery) params.append('search', searchQuery);
-
-    api.get(`/api/products?${params.toString()}`)
-      .then(res => setProducts(res.data))
-      .catch(err => console.error(err))
-      .finally(() => setLoading(false));
-  }, [category, filter, searchQuery, isNewArrival, isSale]);
-
   useEffect(() => {
     setPage(1);
-    fetchProducts();
-  }, [fetchProducts]);
+    setLoading(true);
+    let result = allProducts;
+    if (isNewArrival) result = allProducts.filter(p => p.is_new_arrival);
+    else if (isSale) result = allProducts.filter(p => p.is_on_sale);
+    else if (category && category !== 'all') result = allProducts.filter(p => p.category.toLowerCase() === category.toLowerCase());
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(p => p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q));
+    }
+    setProducts(result);
+    setLoading(false);
+  }, [category, filter, searchQuery, isNewArrival, isSale]);
 
   const toggleSize = (size) => {
     setSelectedSizes(prev =>

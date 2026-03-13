@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import api from '../api.js';
+import { getProductById, getProductsByCategory, getReviewsByProduct } from '../data/products.js';
 import { useCart } from '../context/CartContext.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import ProductCard from '../components/ProductCard.jsx';
@@ -61,34 +61,20 @@ export default function ProductDetail() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    setLoading(true);
     setImgError(false);
     setSelectedImage(0);
     setSelectedColor('');
     setSelectedSize('');
     setQuantity(1);
 
-    Promise.all([
-      api.get(`/api/products/${id}`),
-      api.get(`/api/reviews/${id}`)
-    ])
-      .then(([productRes, reviewsRes]) => {
-        setProduct(productRes.data);
-        setReviews(reviewsRes.data);
-        if (productRes.data.colors?.length > 0) setSelectedColor(productRes.data.colors[0]);
-        if (productRes.data.sizes?.length > 0) setSelectedSize(productRes.data.sizes[0]);
-
-        // Fetch related products
-        return api.get(`/api/products?category=${productRes.data.category}&limit=6`);
-      })
-      .then(relatedRes => {
-        setRelated(relatedRes.data.filter(p => p.id !== parseInt(id)).slice(0, 4));
-      })
-      .catch(err => {
-        console.error(err);
-        if (err.response?.status === 404) navigate('/');
-      })
-      .finally(() => setLoading(false));
+    const found = getProductById(id);
+    if (!found) { navigate('/'); return; }
+    setProduct(found);
+    setReviews(getReviewsByProduct(id));
+    if (found.colors?.length > 0) setSelectedColor(found.colors[0]);
+    if (found.sizes?.length > 0) setSelectedSize(found.sizes[0]);
+    setRelated(getProductsByCategory(found.category).filter(p => p.id !== parseInt(id)).slice(0, 4));
+    setLoading(false);
   }, [id, navigate]);
 
   const handleAddToCart = async () => {
@@ -105,33 +91,20 @@ export default function ProductDetail() {
     }
   };
 
-  const handleSubmitReview = async (e) => {
+  const handleSubmitReview = (e) => {
     e.preventDefault();
-    if (!user) {
-      navigate('/login');
-      return;
-    }
-    if (!reviewForm.rating) {
-      setReviewError('Please select a star rating.');
-      return;
-    }
-    try {
-      setSubmittingReview(true);
-      await api.post('/api/reviews', {
-        product_id: parseInt(id),
-        rating: reviewForm.rating,
-        comment: reviewForm.comment
-      });
-      setReviewSuccess(true);
-      setReviewForm({ rating: 0, comment: '' });
-      // Reload reviews
-      const reviewsRes = await api.get(`/api/reviews/${id}`);
-      setReviews(reviewsRes.data);
-    } catch (err) {
-      setReviewError(err.response?.data?.error || 'Failed to submit review.');
-    } finally {
-      setSubmittingReview(false);
-    }
+    if (!reviewForm.rating) { setReviewError('Please select a star rating.'); return; }
+    const newReview = {
+      id: Date.now(),
+      product_id: parseInt(id),
+      reviewer_name: user ? user.name : 'Guest',
+      rating: reviewForm.rating,
+      comment: reviewForm.comment,
+      created_at: new Date().toISOString()
+    };
+    setReviews(prev => [newReview, ...prev]);
+    setReviewSuccess(true);
+    setReviewForm({ rating: 0, comment: '' });
   };
 
   const placeholderUrl = product
